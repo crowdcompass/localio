@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "spreadsheet", "~> 1.0"
   spec.add_dependency "simple_xlsx_reader", "~> 1.0"
   spec.add_dependency "nokogiri", "~> 1.6"
+  spec.add_dependency "activesupport"
 end

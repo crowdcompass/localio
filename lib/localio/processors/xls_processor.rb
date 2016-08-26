@@ -3,7 +3,7 @@ require 'localio/term'
 
 class XlsProcessor
 
-  def self.load_localizables(platform_options, options)
+  def self.load_localizables(platform_options, options, allowed_languages)
 
     # Parameter validations
     path = options[:path]

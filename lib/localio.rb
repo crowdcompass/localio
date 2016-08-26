@@ -3,6 +3,9 @@ require 'localio/locfile'
 require 'localio/processor'
 require 'localio/localizable_writer'
 require 'localio/filter'
+require 'active_support/inflector'
+require 'localio/processors/csv_processor'
+Dir["localio/processors/*"].each {|file| require file }
 
 module Localio
 
@@ -37,10 +40,19 @@ module Localio
   end
 
   def self.process_to_memory
-    @localizables = Processor.load_localizables @configuration.platform_options,
-                                                @configuration.source_service,
+    @localizables = processor.load_localizables(
+                                                @configuration.platform_options,
                                                 @configuration.source_options,
                                                 @configuration.languages
+                                               )
+  end
+
+  def self.processor
+    if [:xlsx, :xls, :google_drive, :csv].include? @configuration.source_service
+      "#{@configuration.source_service.to_s.classify}Processor".constantize
+    else
+      raise ArgumentError, 'Unsupported service! Try with :google_drive, :csv, :xlsx or :xls in the source argument'
+    end
   end
 
   def self.apply_filters

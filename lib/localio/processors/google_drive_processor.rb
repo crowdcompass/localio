@@ -4,7 +4,7 @@ require 'localio/config_store'
 
 class GoogleDriveProcessor
 
-  def self.load_localizables(platform_options, options)
+  def self.load_localizables(platform_options, options, allowed_languages)
     # Parameter validations
     spreadsheet = options[:spreadsheet]
     raise ArgumentError, ':spreadsheet required for Google Drive source!' if spreadsheet.nil?
