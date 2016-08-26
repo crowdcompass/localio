@@ -1,17 +1,12 @@
 require 'simple_xlsx_reader'
 require 'localio/term'
+require 'localio/processor'
 
-class XlsxProcessor
-  attr_accessor :options, :platform_options, :allowed_languages, :path, :languages, :sheet_index
+class XlsxProcessor < Processor
 
   def initialize(platform_options, options, allowed_languages)
-    @platform_options = platform_options || {}
-    @options = options
-    @path = options[:path]
-    @allowed_languages = allowed_languages
-    @languages = Hash.new("languages")
-    @sheet_index = options[:sheet_index] || 0
-    raise ArgumentError, ':path attribute is missing from the source, and it is required for CSV spreadsheets' if path.nil?
+    super
+    raise ArgumentError, ':path attribute is missing from the source, and it is required for Xlsx spreadsheets' if path.nil?
   end
 
   def load_localizables

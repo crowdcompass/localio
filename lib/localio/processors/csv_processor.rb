@@ -1,15 +1,10 @@
 require 'csv'
 require 'localio/term'
+require 'localio/processor'
 
-class CsvProcessor
-  attr_accessor :options, :platform_options, :allowed_languages, :path, :languages
-
+class CsvProcessor < Processor
   def initialize(platform_options, options, allowed_languages)
-    @platform_options = platform_options || {}
-    @options = options
-    @path = options[:path]
-    @allowed_languages = allowed_languages
-    @languages = Hash.new("languages")
+    super
     raise ArgumentError, ':path attribute is missing from the source, and it is required for CSV spreadsheets' if path.nil?
   end
 

@@ -1,21 +1,13 @@
-require 'localio/processors/google_drive_processor'
-require 'localio/processors/xls_processor'
-require 'localio/processors/xlsx_processor'
-require 'localio/processors/csv_processor'
+class Processor
+  attr_accessor :options, :platform_options, :allowed_languages, :path, :languages, :sheet_index
 
-module Processor
-  def self.load_localizables(platform_options, service, options, languages)
-    case service
-      when :google_drive
-        GoogleDriveProcessor.load_localizables platform_options, options
-      when :xls
-        XlsProcessor.load_localizables platform_options, options
-      when :xlsx
-        XlsxProcessor.load_localizables platform_options, options, languages
-      when :csv
-        CsvProcessor.load_localizables platform_options, options, languages
-      else
-        raise ArgumentError, 'Unsupported service! Try with :google_drive, :csv, :xlsx or :xls in the source argument'
-    end
+  def initialize(platform_options, options, allowed_languages)
+    @platform_options = platform_options || {}
+    @options = options
+    @allowed_languages = allowed_languages
+    @languages = Hash.new("languages")
+    @path = options[:path]
+    @sheet_index = options[:sheet_index] || 0
   end
+
 end
