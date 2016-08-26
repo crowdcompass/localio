@@ -3,9 +3,20 @@ require 'localio/term'
 require 'localio/config_store'
 
 class GoogleDriveProcessor
+  attr_accessor :options, :platform_options, :allowed_languages, :path, :languages, :sheet_index
 
-  def self.load_localizables(platform_options, options, allowed_languages)
-    # Parameter validations
+  def initialize(platform_options, options, allowed_languages)
+    @platform_options = platform_options || {}
+    @options = options
+    @path = options[:path]
+    @allowed_languages = allowed_languages
+    @languages = Hash.new("languages")
+    @sheet_index = options[:sheet_index] || 0
+    raise ArgumentError, ':path attribute is missing from the source, and it is required for CSV spreadsheets' if path.nil?
+  end
+
+
+  def self.load_localizables    # Parameter validations
     spreadsheet = options[:spreadsheet]
     raise ArgumentError, ':spreadsheet required for Google Drive source!' if spreadsheet.nil?
 
@@ -23,9 +34,7 @@ class GoogleDriveProcessor
     raise ArgumentError, ':client_id required for Google Drive. Check how to get it here: https://developers.google.com/drive/web/auth/web-server' if client_id.nil?
     raise ArgumentError, ':client_secret required for Google Drive. Check how to get it here: https://developers.google.com/drive/web/auth/web-server' if client_secret.nil?
 
-    override_default = nil
-    override_default = platform_options[:override_default] unless platform_options.nil? or platform_options[:override_default].nil?
-
+    override_default = platform_options[:override_default]
     # Log in and get spreadsheet
     puts 'Logging in to Google Drive...'
     begin
@@ -92,7 +101,7 @@ class GoogleDriveProcessor
 
 
     # TODO we could pass a :page_index in the options hash and get that worksheet instead, defaulting to zero?
-    worksheet = matching_spreadsheets[0].worksheets[0]
+    worksheet = matching_spreadsheets[0].worksheets[sheet_index]
     raise 'Unable to retrieve the first worksheet from the spreadsheet. Are there any pages?' if worksheet.nil?
 
     # At this point we have the worksheet, so we want to store all the key / values
@@ -108,7 +117,6 @@ class GoogleDriveProcessor
     raise IndexError, 'Invalid format: Could not find any [end] keyword in the A column of the worksheet' if last_valid_row_index.nil?
     raise IndexError, 'Invalid format: [end] must not be before [key] in the A column' if first_valid_row_index > last_valid_row_index
 
-    languages = Hash.new('languages')
     default_language = nil
 
     for column in 2..worksheet.max_cols

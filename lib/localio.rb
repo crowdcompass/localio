@@ -40,11 +40,11 @@ module Localio
   end
 
   def self.process_to_memory
-    @localizables = processor.load_localizables(
-                                                @configuration.platform_options,
-                                                @configuration.source_options,
-                                                @configuration.languages
-                                               )
+    @localizables = processor.new(
+                                   @configuration.platform_options,
+                                   @configuration.source_options,
+                                   @configuration.languages
+                                 ).load_localizables
   end
 
   def self.processor

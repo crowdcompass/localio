@@ -2,22 +2,27 @@ require 'spreadsheet'
 require 'localio/term'
 
 class XlsProcessor
+  attr_accessor :options, :platform_options, :allowed_languages, :path, :languages, :sheet_index
 
-  def self.load_localizables(platform_options, options, allowed_languages)
+  def initialize(platform_options, options, allowed_languages)
+    @platform_options = platform_options || {}
+    @options = options
+    @path = options[:path]
+    @allowed_languages = allowed_languages
+    @languages = Hash.new("languages")
+    @sheet_index = options[:sheet_index] || 0
+    raise ArgumentError, ':path attribute is missing from the source, and it is required for CSV spreadsheets' if path.nil?
+  end
 
+  def load_localizables
     # Parameter validations
-    path = options[:path]
-    raise ArgumentError, ':path attribute is missing from the source, and it is required for xls spreadsheets' if path.nil?
-
-    override_default = nil
-    override_default = platform_options[:override_default] unless platform_options.nil? or platform_options[:override_default].nil?
-
+    override_default = platform_options[:override_default]
     Spreadsheet.client_encoding = 'UTF-8'
 
     book = Spreadsheet.open path
 
     # TODO we could pass a :page_index in the options hash and get that worksheet instead, defaulting to zero?
-    worksheet = book.worksheet 0
+    worksheet = book.worksheet sheet_index
     raise 'Unable to retrieve the first worksheet from the spreadsheet. Are there any pages?' if worksheet.nil?
 
     # At this point we have the worksheet, so we want to store all the key / values
@@ -33,7 +38,6 @@ class XlsProcessor
     raise IndexError, 'Invalid format: Could not find any [end] keyword in the A column of the worksheet' if last_valid_row_index.nil?
     raise IndexError, 'Invalid format: [end] must not be before [key] in the A column' if first_valid_row_index > last_valid_row_index
 
-    languages = Hash.new('languages')
     default_language = nil
 
     for column in 1..worksheet.column_count

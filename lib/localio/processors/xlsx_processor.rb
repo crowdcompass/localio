@@ -2,17 +2,22 @@ require 'simple_xlsx_reader'
 require 'localio/term'
 
 class XlsxProcessor
+  attr_accessor :options, :platform_options, :allowed_languages, :path, :languages, :sheet_index
 
-  def self.load_localizables(platform_options, options, allowed_languages)
+  def initialize(platform_options, options, allowed_languages)
+    @platform_options = platform_options || {}
+    @options = options
+    @path = options[:path]
+    @allowed_languages = allowed_languages
+    @languages = Hash.new("languages")
+    @sheet_index = options[:sheet_index] || 0
+    raise ArgumentError, ':path attribute is missing from the source, and it is required for CSV spreadsheets' if path.nil?
+  end
 
+  def load_localizables
     # Parameter validations
-    path = options[:path]
-    sheet_index = options[:sheet_index] || 0
-    raise ArgumentError, ':path attribute is missing from the source, and it is required for xlsx spreadsheets' if path.nil?
 
-    override_default = nil
-    override_default = platform_options[:override_default] unless platform_options.nil? or platform_options[:override_default].nil?
-
+    override_default = platform_options[:override_default]
     book = SimpleXlsxReader.open path
 
     # TODO we could pass a :page_index in the options hash and get that worksheet instead, defaulting to zero?
@@ -32,7 +37,6 @@ class XlsxProcessor
     raise IndexError, 'Invalid format: Could not find any [end] keyword in the A column of the worksheet' if last_valid_row_index.nil?
     raise IndexError, 'Invalid format: [end] must not be before [key] in the A column' if first_valid_row_index > last_valid_row_index
 
-    languages = Hash.new('languages')
     default_language = nil
     
     for column in 1..worksheet.rows[first_valid_row_index].count-1

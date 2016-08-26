@@ -2,15 +2,21 @@ require 'csv'
 require 'localio/term'
 
 class CsvProcessor
+  attr_accessor :options, :platform_options, :allowed_languages, :path, :languages
 
-  def self.load_localizables(platform_options, options, allowed_languages)
-
-    # Parameter validations
-    path = options[:path]
+  def initialize(platform_options, options, allowed_languages)
+    @platform_options = platform_options || {}
+    @options = options
+    @path = options[:path]
+    @allowed_languages = allowed_languages
+    @languages = Hash.new("languages")
     raise ArgumentError, ':path attribute is missing from the source, and it is required for CSV spreadsheets' if path.nil?
+  end
 
-    override_default = nil
-    override_default = platform_options[:override_default] unless platform_options.nil? or platform_options[:override_default].nil?
+  def load_localizables
+    # Parameter validations
+
+    override_default = platform_options[:override_default]
 
     # , is the default separator; we only set this if we specified a different separator
     separator = options[:column_separator] ||= ','
