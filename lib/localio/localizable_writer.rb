@@ -1,6 +1,6 @@
 require 'localio/writers/android_writer'
 require 'localio/writers/ios_writer'
-require 'localio/writers/oeg_writer'
+require 'localio/writers/javascript_writer'
 require 'localio/writers/swift_writer'
 require 'localio/writers/json_writer'
 require 'localio/writers/rails_writer'
@@ -24,10 +24,10 @@ module LocalizableWriter
         JavaPropertiesWriter.write languages, terms, path, formatter, options
       when :resx
         ResXWriter.write languages, terms, path, formatter, options
-      when :oeg
-        OegWriter.write languages, terms, path, formatter, options
+      when :javascript
+        JavascriptWriter.write languages, terms, path, formatter, options
       else
-        raise ArgumentError, 'Platform not supported! Current possibilities are :android, :ios, :json, :rails, :java_properties, :resx, :oeg'
+        raise ArgumentError, 'Platform not supported! Current possibilities are :android, :ios, :json, :rails, :java_properties, :resx, :javascript'
     end
   end
 end

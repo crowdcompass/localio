@@ -3,9 +3,9 @@ require 'localio/segments_list_holder'
 require 'localio/segment'
 require 'localio/formatter'
 
-class OegWriter
+class JavascriptWriter
   def self.write(languages, terms, path, formatter, options)
-    puts 'Writing oeg translations...'
+    puts 'Writing javascript translations...'
 
     languages.keys.each do |lang|
       output_path = path
@@ -16,8 +16,8 @@ class OegWriter
       segments = SegmentsListHolder.new lang
       terms.each do |term|
         next if term.values[lang].nil?
-        key = Formatter.format(term.keyword, formatter, method(:oeg_key_formatter))
-        translation = oeg_parsing(term.values[lang])
+        key = Formatter.format(term.keyword, formatter, method(:javascript_key_formatter))
+        translation = javascript_parsing(term.values[lang])
         segment = Segment.new(key, translation, lang)
         segment.key = nil if term.is_comment?
         segments.segments << segment
@@ -31,7 +31,7 @@ class OegWriter
     end
   end
 
-  def self.oeg_parsing(term)
+  def self.javascript_parsing(term)
     term.gsub(/<s\$(\d)>/, '%@\1').#<s$1> -> %@1 for string/object params
          gsub(/<d\$(\d)>/, '%@\1').#<d$1> -> %@1 for integer params
          gsub('""', '\"') #""example"" -> \"example\"
@@ -39,7 +39,7 @@ class OegWriter
 
   private
 
-  def self.oeg_key_formatter(key)
+  def self.javascript_key_formatter(key)
     key.space_to_underscore.strip_tag.downcase
   end
 
