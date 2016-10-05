@@ -22,6 +22,8 @@ class RailsWriter
         segments.segments << segment
       end
 
+      segments.create_nested_hash
+
       TemplateHandler.process_template 'rails_localizable.erb', output_path, "#{lang}.yml", segments
       puts " > #{lang.yellow}"
     end
