@@ -2,9 +2,9 @@ require 'csv'
 require 'localio/term'
 
 class CsvProcessor
+  class InvalidCSVHeaderError < StandardError; end
 
   def self.load_localizables(platform_options, options, allowed_languages)
-
     # Parameter validations
     path = options[:path]
     raise ArgumentError, ':path attribute is missing from the source, and it is required for CSV spreadsheets' if path.nil?
@@ -56,7 +56,13 @@ class CsvProcessor
     first_term_row = first_valid_row_index+1
     last_term_row = last_valid_row_index-1
 
+    application_index = csv_file[first_valid_row_index].index('Application')
+    raise InvalidCSVHeaderError if application_index.nil?
+
     for row in first_term_row..last_term_row
+      if platform_options[:platform_name]
+        next unless csv_file[row][application_index] == platform_options[:platform_name].to_s
+      end
       key = csv_file[row][0]
       unless key.to_s == ''
         term = Term.new(key)

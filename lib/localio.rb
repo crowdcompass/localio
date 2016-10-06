@@ -6,6 +6,9 @@ require 'localio/filter'
 
 module Localio
 
+  # limits results to csv rows specific to the app
+  APPLICATION_LIMITED = [:hub].freeze
+
   def self.from_cmdline(args)
     if ARGV.empty?
       if File.exist? 'Locfile'
@@ -37,6 +40,9 @@ module Localio
   end
 
   def self.process_to_memory
+    if APPLICATION_LIMITED.include?(@configuration.platform_name)
+      @configuration.platform_options[:platform_name] = @configuration.platform_name
+    end
     @localizables = Processor.load_localizables @configuration.platform_options,
                                                 @configuration.source_service,
                                                 @configuration.source_options,

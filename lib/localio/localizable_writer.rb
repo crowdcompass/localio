@@ -26,8 +26,10 @@ module LocalizableWriter
         ResXWriter.write languages, terms, path, formatter, options
       when :javascript
         JavascriptWriter.write languages, terms, path, formatter, options
+      when :hub
+        RailsWriter.write languages, terms, path, formatter, options
       else
-        raise ArgumentError, 'Platform not supported! Current possibilities are :android, :ios, :json, :rails, :java_properties, :resx, :javascript'
+        raise ArgumentError, 'Platform not supported! Current possibilities are :android, :ios, :json, :rails, :java_properties, :resx, :javascript, :hub'
     end
   end
 end
