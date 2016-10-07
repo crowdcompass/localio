@@ -10,7 +10,7 @@ class Locfile
 
   # Specifies the filesystem path where the generated files will be
   dsl_accessor :output_path
-  
+
   dsl_accessor :output_name
 
   # Specifies the format for the keys in the localizable file
