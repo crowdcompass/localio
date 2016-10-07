@@ -1,3 +1,3 @@
 module Localio
-  VERSION = "0.1.6.pre10"
+  VERSION = "0.1.6"
 end
