@@ -15,7 +15,8 @@ class CsvProcessor
     # , is the default separator; we only set this if we specified a different separator
     separator = options[:column_separator] ||= ','
 
-    csv_file = CSV.read path, col_sep: separator
+    new_path = File.exist?(path) ? path : File.expand_path(path, File.dirname(__FILE__))
+    csv_file = CSV.read(new_path, { col_sep: separator, encoding: 'ISO-8859-1' })
 
     # At this point we have the worksheet, so we want to store all the key / values
     first_valid_row_index = nil
